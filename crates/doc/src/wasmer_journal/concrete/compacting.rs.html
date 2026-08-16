@@ -1,11 +1,11 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lib/journal/src/concrete/compacting.rs`."><title>compacting.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wasmer_journal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.1 (ed61e7d7e 2025-11-07)" data-channel="1.91.1" data-search-js="search-e256b49e.js" data-stringdex-js="stringdex-c3e638e9.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6dc2a7f3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">wasmer_journal/concrete/</div>compacting.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::{
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lib/journal/src/concrete/compacting.rs`."><title>compacting.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b7b9f40b.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wasmer_journal" data-themes="" data-resource-suffix="" data-rustdoc-version="1.95.0 (59807616e 2026-04-14)" data-channel="1.95.0" data-search-js="search-63369b7b.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">wasmer_journal/concrete/</div>compacting.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::{
 <a href=#2 id=2 data-nosnippet>2</a>    collections::{HashMap, HashSet},
 <a href=#3 id=3 data-nosnippet>3</a>    ops::{DerefMut, Range},
 <a href=#4 id=4 data-nosnippet>4</a>    sync::{Arc, Mutex},
 <a href=#5 id=5 data-nosnippet>5</a>};
 <a href=#6 id=6 data-nosnippet>6</a><span class="kw">use </span>wasmer_wasix_types::wasi;
 <a href=#7 id=7 data-nosnippet>7</a>
-<a href=#8 id=8 data-nosnippet>8</a><span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#8 id=8 data-nosnippet>8</a><span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#9 id=9 data-nosnippet>9</a>
 <a href=#10 id=10 data-nosnippet>10</a><span class="kw">pub type </span>Fd = u32;
 <a href=#11 id=11 data-nosnippet>11</a>
@@ -13,7 +13,7 @@
 <a href=#13 id=13 data-nosnippet>13</a>/// final journal as it is compacted.
 <a href=#14 id=14 data-nosnippet>14</a>///
 <a href=#15 id=15 data-nosnippet>15</a>/// By grouping events into subevents it makes it possible to ignore an
-<a href=#16 id=16 data-nosnippet>16</a>/// entire subgroup of events which are superseeded by a later event. For
+<a href=#16 id=16 data-nosnippet>16</a>/// entire subgroup of events which are superseded by a later event. For
 <a href=#17 id=17 data-nosnippet>17</a>/// example, all the events involved in creating a file are irrelevant if
 <a href=#18 id=18 data-nosnippet>18</a>/// that file is later deleted.
 <a href=#19 id=19 data-nosnippet>19</a></span><span class="attr">#[derive(Debug, Default)]
@@ -61,7 +61,7 @@
 <a href=#61 id=61 data-nosnippet>61</a>/// on the final deterministic outcome of the entire log.
 <a href=#62 id=62 data-nosnippet>62</a>///
 <a href=#63 id=63 data-nosnippet>63</a>/// By grouping events into subevents it makes it possible to ignore an
-<a href=#64 id=64 data-nosnippet>64</a>/// entire subgroup of events which are superceded by a later event. For
+<a href=#64 id=64 data-nosnippet>64</a>/// entire subgroup of events which are superseded by a later event. For
 <a href=#65 id=65 data-nosnippet>65</a>/// example, all the events involved in creating a file are irrelevant if
 <a href=#66 id=66 data-nosnippet>66</a>/// that file is later deleted.
 <a href=#67 id=67 data-nosnippet>67</a></span><span class="attr">#[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash)]
@@ -391,7 +391,7 @@
 <a href=#391 id=391 data-nosnippet>391</a>        })
 <a href=#392 id=392 data-nosnippet>392</a>    }
 <a href=#393 id=393 data-nosnippet>393</a>
-<a href=#394 id=394 data-nosnippet>394</a>    <span class="doccomment">/// Creates a filter jounral which will write all
+<a href=#394 id=394 data-nosnippet>394</a>    <span class="doccomment">/// Creates a filter journal which will write all
 <a href=#395 id=395 data-nosnippet>395</a>    /// its events to an inner journal
 <a href=#396 id=396 data-nosnippet>396</a>    </span><span class="kw">pub fn </span>create_filter&lt;J&gt;(
 <a href=#397 id=397 data-nosnippet>397</a>        <span class="kw-2">&amp;</span><span class="self">self</span>,
@@ -900,7 +900,7 @@
 <a href=#900 id=900 data-nosnippet>900</a></span><span class="kw">mod </span>tests {
 <a href=#901 id=901 data-nosnippet>901</a>    <span class="kw">use </span>std::borrow::Cow;
 <a href=#902 id=902 data-nosnippet>902</a>
-<a href=#903 id=903 data-nosnippet>903</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#903 id=903 data-nosnippet>903</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#904 id=904 data-nosnippet>904</a>
 <a href=#905 id=905 data-nosnippet>905</a>    <span class="kw">pub fn </span>run_test&lt;<span class="lifetime">'a</span>&gt;(
 <a href=#906 id=906 data-nosnippet>906</a>        in_records: Vec&lt;JournalEntry&lt;<span class="lifetime">'a</span>&gt;&gt;,
@@ -1561,4 +1561,5 @@
 <a href=#1561 id=1561 data-nosnippet>1561</a>        )
 <a href=#1562 id=1562 data-nosnippet>1562</a>        .unwrap()
 <a href=#1563 id=1563 data-nosnippet>1563</a>    }
-<a href=#1564 id=1564 data-nosnippet>1564</a>}</code></pre></div></section></main></body></html>
+<a href=#1564 id=1564 data-nosnippet>1564</a>}
+</code></pre></div></section></main></body></html>

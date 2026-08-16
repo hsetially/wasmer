@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lib/package/src/package/manifest.rs`."><title>manifest.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-e56847b5.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wasmer_package" data-themes="" data-resource-suffix="" data-rustdoc-version="1.91.1 (ed61e7d7e 2025-11-07)" data-channel="1.91.1" data-search-js="search-e256b49e.js" data-stringdex-js="stringdex-c3e638e9.js" data-settings-js="settings-c38705f0.js" ><script src="../../../static.files/storage-e2aeef58.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-6dc2a7f3.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content"><div class="main-heading"><h1><div class="sub-heading">wasmer_package/package/</div>manifest.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::{
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `lib/package/src/package/manifest.rs`."><title>manifest.rs - source</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../../static.files/rustdoc-b7b9f40b.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wasmer_package" data-themes="" data-resource-suffix="" data-rustdoc-version="1.95.0 (59807616e 2026-04-14)" data-channel="1.95.0" data-search-js="search-63369b7b.js" data-stringdex-js="stringdex-b897f86f.js" data-settings-js="settings-170eb4bf.js" ><script src="../../../static.files/storage-41dd4d93.js"></script><script defer src="../../../static.files/src-script-813739b1.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-5013f961.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-f7c3ffd8.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-044be391.svg"></head><body class="rustdoc src"><a class="skip-main-content" href="#main-content">Skip to main content</a><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="src-sidebar-title"><h2>Files</h2></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><section id="main-content" class="content" tabindex="-1"><div class="main-heading"><h1><div class="sub-heading">wasmer_package/package/</div>manifest.rs</h1><rustdoc-toolbar></rustdoc-toolbar></div><div class="example-wrap digits-4"><pre class="rust"><code><a href=#1 id=1 data-nosnippet>1</a><span class="kw">use </span>std::{
 <a href=#2 id=2 data-nosnippet>2</a>    collections::BTreeMap,
 <a href=#3 id=3 data-nosnippet>3</a>    path::{Path, PathBuf},
 <a href=#4 id=4 data-nosnippet>4</a>};
@@ -26,7 +26,7 @@
 <a href=#26 id=26 data-nosnippet>26</a>    },
 <a href=#27 id=27 data-nosnippet>27</a>};
 <a href=#28 id=28 data-nosnippet>28</a>
-<a href=#29 id=29 data-nosnippet>29</a><span class="kw">use super</span>::{FsVolume, Strictness};
+<a href=#29 id=29 data-nosnippet>29</a><span class="kw">use </span>super::{FsVolume, Strictness};
 <a href=#30 id=30 data-nosnippet>30</a>
 <a href=#31 id=31 data-nosnippet>31</a><span class="kw">const </span>METADATA_VOLUME: <span class="kw-2">&amp;</span>str = FsVolume::METADATA;
 <a href=#32 id=32 data-nosnippet>32</a>
@@ -512,7 +512,7 @@
 <a href=#512 id=512 data-nosnippet>512</a>    manifest: <span class="kw-2">&amp;</span>WasmerManifest,
 <a href=#513 id=513 data-nosnippet>513</a>    base_dir: <span class="kw-2">&amp;</span>Path,
 <a href=#514 id=514 data-nosnippet>514</a>) -&gt; <span class="prelude-ty">Result</span>&lt;IndexMap&lt;String, Command&gt;, ManifestError&gt; {
-<a href=#515 id=515 data-nosnippet>515</a>    trasform_commands_shared(
+<a href=#515 id=515 data-nosnippet>515</a>    transform_commands_shared(
 <a href=#516 id=516 data-nosnippet>516</a>        manifest,
 <a href=#517 id=517 data-nosnippet>517</a>        |cmd| transform_command_v1(cmd, manifest),
 <a href=#518 id=518 data-nosnippet>518</a>        |cmd| transform_command_v2(cmd, base_dir),
@@ -522,7 +522,7 @@
 <a href=#522 id=522 data-nosnippet>522</a><span class="kw">fn </span>transform_in_memory_commands(
 <a href=#523 id=523 data-nosnippet>523</a>    manifest: <span class="kw-2">&amp;</span>WasmerManifest,
 <a href=#524 id=524 data-nosnippet>524</a>) -&gt; <span class="prelude-ty">Result</span>&lt;IndexMap&lt;String, Command&gt;, ManifestError&gt; {
-<a href=#525 id=525 data-nosnippet>525</a>    trasform_commands_shared(
+<a href=#525 id=525 data-nosnippet>525</a>    transform_commands_shared(
 <a href=#526 id=526 data-nosnippet>526</a>        manifest,
 <a href=#527 id=527 data-nosnippet>527</a>        |cmd| transform_command_v1(cmd, manifest),
 <a href=#528 id=528 data-nosnippet>528</a>        transform_in_memory_command_v2,
@@ -530,7 +530,7 @@
 <a href=#530 id=530 data-nosnippet>530</a>}
 <a href=#531 id=531 data-nosnippet>531</a>
 <a href=#532 id=532 data-nosnippet>532</a><span class="attr">#[allow(deprecated)]
-<a href=#533 id=533 data-nosnippet>533</a></span><span class="kw">fn </span>trasform_commands_shared(
+<a href=#533 id=533 data-nosnippet>533</a></span><span class="kw">fn </span>transform_commands_shared(
 <a href=#534 id=534 data-nosnippet>534</a>    manifest: <span class="kw-2">&amp;</span>WasmerManifest,
 <a href=#535 id=535 data-nosnippet>535</a>    transform_command_v1: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>CommandV1) -&gt; <span class="prelude-ty">Result</span>&lt;Command, ManifestError&gt;,
 <a href=#536 id=536 data-nosnippet>536</a>    transform_command_v2: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>CommandV2) -&gt; <span class="prelude-ty">Result</span>&lt;Command, ManifestError&gt;,
@@ -999,7 +999,7 @@
 <a href=#999 id=999 data-nosnippet>999</a>    <span class="kw">use </span>tempfile::TempDir;
 <a href=#1000 id=1000 data-nosnippet>1000</a>    <span class="kw">use </span>webc::metadata::annotations::Wasi;
 <a href=#1001 id=1001 data-nosnippet>1001</a>
-<a href=#1002 id=1002 data-nosnippet>1002</a>    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+<a href=#1002 id=1002 data-nosnippet>1002</a>    <span class="kw">use </span>super::<span class="kw-2">*</span>;
 <a href=#1003 id=1003 data-nosnippet>1003</a>
 <a href=#1004 id=1004 data-nosnippet>1004</a>    <span class="attr">#[test]
 <a href=#1005 id=1005 data-nosnippet>1005</a>    </span><span class="kw">fn </span>custom_annotations_are_copied_across_verbatim() {
@@ -1210,7 +1210,7 @@
 <a href=#1210 id=1210 data-nosnippet>1210</a>        <span class="kw">let </span>temp = TempDir::new().unwrap();
 <a href=#1211 id=1211 data-nosnippet>1211</a>        <span class="kw">let </span>wasmer_toml = <span class="string">r#"
 <a href=#1212 id=1212 data-nosnippet>1212</a>            [package]
-<a href=#1213 id=1213 data-nosnippet>1213</a>            name = "sharrattj/bash"
+<a href=#1213 id=1213 data-nosnippet>1213</a>            name = "wasmer/bash"
 <a href=#1214 id=1214 data-nosnippet>1214</a>            version = "1.0.17"
 <a href=#1215 id=1215 data-nosnippet>1215</a>            description = "Bash is a modern POSIX-compliant implementation of /bin/sh."
 <a href=#1216 id=1216 data-nosnippet>1216</a>            license = "GNU"
@@ -1412,4 +1412,5 @@
 <a href=#1412 id=1412 data-nosnippet>1412</a>            { <span class="macro">insta::assert_yaml_snapshot!</span>(<span class="kw-2">&amp;</span>transformed); }
 <a href=#1413 id=1413 data-nosnippet>1413</a>        }
 <a href=#1414 id=1414 data-nosnippet>1414</a>    }
-<a href=#1415 id=1415 data-nosnippet>1415</a>}</code></pre></div></section></main></body></html>
+<a href=#1415 id=1415 data-nosnippet>1415</a>}
+</code></pre></div></section></main></body></html>
